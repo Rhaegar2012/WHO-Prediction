@@ -1,0 +1,53 @@
+#Import Cleaned Dataset and libraries that we may need
+library(readr)
+library(tidyverse)
+library(caret)
+library(broom)
+
+led.cleaned <- read_csv("LANGARA/DANA 4810/Group project/Life Expectancy Data Cleaned 16-3-2021.csv")
+
+summary(led.cleaned)
+hist(led.cleaned$Income.composition.of.resources)
+
+#Bin into 5 categories based on the Income Composition of Resources
+
+bins <- c(0, 0.4, 0.6, 0.8, 1.0)
+names <- c("Low", "Medium","Medium-High", "High")
+
+led.cleaned$Income.composition.categorical <- cut(led.cleaned$Income.composition.of.resources, breaks = bins, labels = names)
+led.cleaned
+
+#Create dataframes for each category so that we can run separate models on each
+
+led.low<-filter(led.cleaned, Income.composition.categorical == "Low")
+led.medium<-filter(led.cleaned, Income.composition.categorical == "Medium")
+led.medium.high<-filter(led.cleaned, Income.composition.categorical == "Medium-High")
+led.high<-filter(led.cleaned, Income.composition.categorical == "High")
+
+#Create very preliminary model for category LOW - all predictor variables
+
+set.seed(142)
+training.samples.low <- led.low$Life.expectancy %>%
+  createDataPartition(p = 0.8, list = FALSE)
+train.low  <- led.low[training.samples.low, ]
+test.low <- led.low[-training.samples.low, ]
+
+model.low <- lm(Life.expectancy ~., data = train.low)
+summary(model.low)
+
+library(modelr)
+data.frame(
+  R2 = rsquare(model.low, data = train.low),
+  RMSE = rmse(model.low, data = train.low),
+  MAE = mae(model.low, data = train.low)
+)
+
+predictions.low <- model.low %>% predict(led.low)
+data.frame(
+  R2 = R2(predictions.low, led.low$Life.expectancy),
+  RMSE = RMSE(predictions.low, led.low$Life.expectancy),
+  MAE = MAE(predictions.low, led.low$Life.expectancy)
+)
+
+AIC(model1.low)
+BIC(model.low)
