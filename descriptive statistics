@@ -1,0 +1,127 @@
+library(tidyverse)
+library(ggplot2)
+
+led <- read.csv(file.choose())
+
+View(led)
+summary(led)
+#Observations from summary
+#1. range between 3rd quartile and max is too huge in the following variables:
+#infant.deaths, measles, under.five.deaths
+
+#2. range between min and 1st quartile is huge in the following variables:
+#Hepatitis, polio, Diphteria
+
+str(led)
+
+#Missing values analysis
+sort(sapply(led,function(x) sum(is.na(x))),decreasing = T)
+md.pattern(led)
+
+# If missing data is dropped
+#led <- led %>% drop_na()
+#Dropping 10 missing values of target variable
+led2<- led %>% drop_na(Life.expectancy)
+
+#Exploratory data analysis/Descriptive Statistics
+barplot(table(led$Status))
+table(led$Status) #Developed 512 and developing 2426
+
+#range of target varible - Life expectancy
+range(led2$Life.expectancy)
+
+#Correlation
+data_num <- led2 %>% 
+  select_if(is.numeric)
+cor(data_num, use="complete.obs")
+#Life expenctancy has strong positive correlation with Schooling and Income composition of resources
+#And negative strong correlation with Adult mortality
+#Weak correlation with population and measles
+#Strong correlation between infant deaths and under 5 deaths - multicollinearity
+#Therefore removing under 5 deaths
+
+#Boxplot of life expectancy on the basis of status of country
+ggplot(data = led2, aes(x=Status, y=Life.expectancy, fill = Status)) + geom_boxplot()
+#Life Expectancy is high for developed countries as already expected
+
+#Cheking difference in means of developed and developing countries using ANOVA
+summary(aov(Life.expectancy ~ Status, data = led2))
+#p-value is less than 0.05 - reject null hypothesis
+#There is significant differences in life expectancy for developed and developing countries
+
+
+#Country and year does not contribute in predition of life expectancy
+#Hepatitis, Polio and diphtheria is converted into 2 groups according to World health assembly rule by 2020
+#Under 90% and above 90%
+
+led3 <- led2 %>% 
+  select(-Country, -Year) %>%
+  mutate(Hepatitis.B = ifelse(Hepatitis.B < 90, "<90% Covered", ">=90% Covered"),
+         Polio = ifelse(Polio < 90, "<90% Covered", ">=90% Covered"),
+         Diphtheria = ifelse(Diphtheria < 90, "<90% Covered", ">=90% Covered"),
+         Hepatitis.B = as.factor(Hepatitis.B),
+         Polio = as.factor(Polio),
+         Diphtheria = as.factor(Diphtheria))
+str(led3)
+table(led3$Hepatitis.B)
+table(led3$Polio)
+table(led3$Diphtheria)
+
+#Box plot of life expectancy on hepatitis
+library(ggplot2)
+ggplot(data = led3, aes(x=Hepatitis.B, y=Life.expectancy, fill = Hepatitis.B)) + geom_boxplot()
+#anova
+summary(aov(Life.expectancy ~ Hepatitis.B, data = led3)) #p less than 0.05
+
+#Box plot of life expectancy on polio
+ggplot(data = led3, aes(x=Polio, y=Life.expectancy, fill = Polio)) + geom_boxplot()
+summary(aov(Life.expectancy ~ Polio, data = led3)) #p less than 0.05
+dev.off()
+
+#Box plot of life expectancy on Diphtheria
+ggplot(data = led3, aes(x=Diphtheria, y=Life.expectancy, fill = Diphtheria)) + geom_boxplot()
+summary(aov(Life.expectancy ~ Diphtheria, data = led3)) #p less than 0.05
+
+
+#Box plots for continous variables:
+ggplot(data=led2) + geom_boxplot(aes(x=Adult.Mortality), size=1.2)
+
+ggplot(data=led2) + geom_boxplot(aes(x=infant.deaths), size=1.2)
+
+ggplot(data=led2) + geom_boxplot(aes(x=BMI), size=1.2)
+
+ggplot(data=led2) + geom_boxplot(aes(x=GDP), size=1.2)
+
+ggplot(data=led2) + geom_boxplot(aes(x=population), size=1.2)
+
+ggplot(data=led2) + geom_boxplot(aes(x=Life.expectancy), size=1.2)
+
+#Scatter plots with target variable
+ggplot(led2, aes(GDP, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led2, aes(GDP, Life.expectancy, color = Year)) + 
+  geom_jitter()
+
+ggplot(led2, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led2, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led2, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()
+
+ggplot(led2, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()
+
+
+#All histograms
+names<-names(led2)
+classes<-sapply(led2,class)
+for(name in names[classes == 'numeric'])
+{
+  dev.new()
+  hist(led2[,name]) # subset with [] not $
+} 
+
