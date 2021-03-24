@@ -581,7 +581,7 @@ summary(m4)
 # R2 value is 0.8687
 
 glance(m1)
-glance(m1)
+glance(m2)
 glance(m3)
 glance(m4)
 #R2 is highest for model 1 and AIC is lowest for model1
