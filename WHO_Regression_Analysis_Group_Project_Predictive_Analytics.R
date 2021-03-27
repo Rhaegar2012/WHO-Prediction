@@ -30,15 +30,8 @@ library(corrplot)
 library(tidyr)
 library(olsrr)
 #================================Reading File===================================
-led <- read_csv("C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data.csv")
-led <- Life.Expectancy.Data
-
-
-
-
-
-
-
+#Select Life Expectancy-Raw provided as an attachment to this report 
+led <- read.csv(file.choose(), sep=',')
 #================================Correlation====================================
 
 #to perform correlation on all numerical variables we need to drop 2 categorical columns, we also need to get rid of na values (deleted for now)
@@ -61,10 +54,11 @@ corrplot(correlation, type = "upper", order = "hclust",
 #=========================Cleaning Pipeline=====================================
 #Cleaning Pipeline
 
-# Fills income composition of resources missing values for USA and the Bahamas 
-HDI <- Human_Development_Index_HDI_
+#Read Human Development Index file provided as annex to this report 
+HDI <- read.csv(file.choose())
 HDI[is.na(HDI)] <- 0
 led[is.na(led)] <- 0
+# Fills income composition of resources missing values for USA and the Bahamas 
 led$Income.composition.of.resources[led$Income.composition.of.resources==0 & 
                                       led$Year==2000 & 
                                       led$Country=='Bahamas']<- HDI$'2000'[HDI$Country=='Bahamas']
@@ -139,12 +133,12 @@ led_clean<-data.frame(Country=character(),
 countries<-unique(led$Country)
 #Imputation of missing values/ Outlier Treatment 
 for (country in countries){
-  mask <- led_prep %>% filter(Country==country)
+  mask <- led_prep %>% filter(Country=="Afghanistan")
   prep_mask<-mask[,-c(1,2)]
   no_outlier_winsor<-winsor(prep_mask,trim=0.37,na.rm=TRUE)
   no_outlier_mask<-cbind(mask[,c(1)],no_outlier_winsor)
   #Mice goes here drop NA as placeholder
-  imp <- mice(no_outlier_mask, method = "cart", m = 1,ignore=NULL)
+  imp <- mice(led_prep, method = "cart", m = 1,ignore=NULL)
   clean_mask<-complete(imp)
   #Append dataframes
   led_clean<-rbind(led_clean,clean_mask)
@@ -155,12 +149,12 @@ summary(led_clean)
 summary(led)
 led_clean_complete<-cbind(led_prep[,c(2)],led_clean)
 #Writes the cleaned dataset to disk 
-write.csv(led_clean_complete,"C:\\Users\\joseb\\Documents\\GitHub\\R\\WHO Prediction\\Life Expectancy Data Cleaned.csv",
+write.csv(led_clean_complete,file.choose(),
           row.names=FALSE)
 
 #=========================Modelling  ===========================================
 
-#Reload cleaned dataset previoulsy saved to disk after data transformation 
+#Reload cleaned dataset Life Expectancy Data-Clean Final provided as an attachment to the report 
 led.original <- read.csv(file.choose(), sep=',')
 View(led.original)
 
