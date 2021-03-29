@@ -241,7 +241,74 @@ model1.low <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                    thinness.five.to.nine.years, data = train.low)
 summary(model1.low)
 
+#Take a look at pairwise scatterplots
+ggplot(led.low, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
 
+ggplot(led.low, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+#Correlation
+data_num <- led.low %>% 
+  select_if(is.numeric)
+correlation.low <-cor(data_num, use="complete.obs")
+correlation.low
+
+
+library(corrplot)
+corrplot(correlation.low, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
+
+
+model1.low <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
+                   Alcohol+percentage.expenditure+Measles+BMI+Polio+
+                   Total.expenditure+Diphtheria+thinness.one.to.nineteen.years+
+                   Income.composition.of.resources+Schooling+
+                   under.five.deaths + HIV.AIDS + 
+                   thinness.five.to.nine.years, data = train.low)
+summary(model1.low)
+#R2 value is 0.7671 with low RSE
+#perform a stepwise variable selection
+library(olsrr)
 #perform a stepwise variable selection
 ols_step_both_p(model1.low)
 #Model with only those variables selected from stepwise
@@ -321,7 +388,75 @@ model1.medium <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                       under.five.deaths + HIV.AIDS + 
                       thinness.five.to.nine.years, data = train.medium)
 summary(model1.medium)
- 
+
+#Take a look at pairwise scatterplots
+ggplot(led.medium, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+
+#Correlation
+data_num <- led.medium %>% 
+  select_if(is.numeric)
+correlation.medium <-cor(data_num, use="complete.obs")
+correlation.medium
+
+
+library(corrplot)
+corrplot(correlation.medium, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
+
+model1.medium <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
+                      Alcohol+percentage.expenditure+Measles+BMI+Polio+
+                      Total.expenditure+Diphtheria+thinness.one.to.nineteen.years+
+                      Income.composition.of.resources+Schooling+
+                      under.five.deaths + HIV.AIDS + 
+                      thinness.five.to.nine.years, data = train.medium)
+summary(model1.medium)
+#R-square is 0.8115 
+
 
 #perform a stepwise variable selection
 ols_step_both_p(model1.medium)
@@ -408,6 +543,53 @@ set.seed(142)
 dt <- sort(sample(nrow(led.medium.high), nrow(led.medium.high)*0.8))
 train.medium.high <- led.medium.high[dt, ]
 test.medium.high <- led.medium.high[-dt,]
+
+
+#Take a look at pairwise scatterplots
+ggplot(led.medium.high, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
 
 model1.medium.high <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                            Alcohol+percentage.expenditure+Measles+BMI+Polio+
