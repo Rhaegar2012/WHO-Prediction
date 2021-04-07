@@ -5,6 +5,7 @@ library(caret)
 library(broom)
 library(olsrr)
 library(modelr)
+library(caret)
 
 led.original <- read.csv(file.choose(), sep=',')
 View(led.original)
@@ -90,6 +91,68 @@ dt <- sort(sample(nrow(led.low), nrow(led.low)*0.8))
 train.low <- led.low[dt, ]
 test.low <- led.low[-dt,]
 
+
+#Take a look at pairwise scatterplots
+ggplot(led.low, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.low, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.low, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.low, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.low, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.low, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.low, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+
+
+#Correlation
+data_num <- led.low %>% 
+  select_if(is.numeric)
+correlation.low <-cor(data_num, use="complete.obs")
+correlation.low
+
+
+library(corrplot)
+corrplot(correlation.low, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
+
+
 model1.low <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                    Alcohol+percentage.expenditure+Measles+BMI+Polio+
                    Total.expenditure+Diphtheria+thinness.one.to.nineteen.years+
@@ -103,16 +166,15 @@ summary(model1.low)
 library(olsrr)
 ols_step_both_p(model1.low)
 
-#Correlation
-data_num <- led.low %>% 
-  select_if(is.numeric)
-correlation <-cor(data_num, use="complete.obs")
-correlation
 
 #Model with only those variables selected from stepwise
 model2.low <- lm(Life.expectancy ~ Adult.Mortality+under.five.deaths+Alcohol+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+HIV.AIDS, data = train.low)
 summary(model2.low)
 #After running model on selected variables from stepwise, R2 value is 0.7376
+
+ggplot(train.low, aes(HIV.AIDS, Life.expectancy) ) +
+  geom_point() +
+  stat_smooth(method = lm, formula = y ~ poly(x, 3, raw = TRUE))
 
 #Polynomials model
 model3.low <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+poly(HIV.AIDS, 3, raw = TRUE), data = train.low)
@@ -123,8 +185,8 @@ summary(model3.low)
 #Polynomial with interactions model
 model4.low <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+ HIV.AIDS+I(HIV.AIDS^2)+I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality + Alcohol*Adult.Mortality, data = train.low)
 summary(model4.low)
-#In the above model, both the interactions of Alcohol and HIV aids with Adult mortality is very significant and overall R square value is increase to 0.8323 from 0.76
 
+#In the above model, both the interactions of Alcohol and HIV aids with Adult mortality is very significant and overall R square value is increase to 0.8323 from 0.76
 
 model5.low <- lm(Life.expectancy ~ Adult.Mortality+Alcohol+under.five.deaths+percentage.expenditure+BMI+Total.expenditure+Diphtheria+thinness.five.to.nine.years+Income.composition.of.resources+ I(HIV.AIDS^2)+I(HIV.AIDS^3)+ HIV.AIDS*Adult.Mortality +Adult.Mortality*Income.composition.of.resources+ Alcohol*Adult.Mortality, data = train.low)
 summary(model5.low)
@@ -188,6 +250,66 @@ set.seed(142)
 dt <- sort(sample(nrow(led.medium), nrow(led.medium)*0.8))
 train.medium <- led.medium[dt, ]
 test.medium <- led.medium[-dt,]
+
+#Take a look at pairwise scatterplots
+ggplot(led.medium, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+
+
+#Correlation
+data_num <- led.medium %>% 
+  select_if(is.numeric)
+correlation.medium <-cor(data_num, use="complete.obs")
+correlation.medium
+
+
+library(corrplot)
+corrplot(correlation.medium, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
 
 model1.medium <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                       Alcohol+percentage.expenditure+Measles+BMI+Polio+
@@ -286,6 +408,66 @@ set.seed(142)
 dt <- sort(sample(nrow(led.medium.high), nrow(led.medium.high)*0.8))
 train.medium.high <- led.medium.high[dt, ]
 test.medium.high <- led.medium.high[-dt,]
+
+#Take a look at pairwise scatterplots
+ggplot(led.medium.high, aes(Adult.Mortality, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Income.composition.of.resources, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Schooling, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(HIV.AIDS, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Total.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(under.five.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(Alcohol, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(infant.deaths, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium.high, aes(percentage.expenditure, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(BMI, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium.high, aes(Measles, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium.high, aes(Polio, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium.high, aes(Diphtheria, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+ggplot(led.medium.high, aes(thinness.one.to.nineteen.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+
+ggplot(led.medium.high, aes(thinness.five.to.nine.years, Life.expectancy)) + 
+  geom_jitter()+ stat_smooth(method = lm, formula = y ~ x)
+  
+
+
+#Correlation
+data_num <- led.medium.high %>% 
+  select_if(is.numeric)
+correlation.medium.high <-cor(data_num, use="complete.obs")
+correlation.medium.high
+
+
+library(corrplot)
+corrplot(correlationmedium.high, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
 
 model1.medium.high <- lm(Life.expectancy ~ Adult.Mortality+infant.deaths+
                            Alcohol+percentage.expenditure+Measles+BMI+Polio+
@@ -446,6 +628,11 @@ data_num <- led.high %>%
 correlation <-cor(data_num, use="complete.obs")
 correlation
 table(led.high$HIV.AIDS)
+
+library(corrplot)
+corrplot(correlation, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt =100)
+
 
 #Model with only those variables selected from stepwise
 model2.high <- lm(Life.expectancy ~ Adult.Mortality+under.five.deaths+Measles+Alcohol+Total.expenditure+thinness.five.to.nine.years+Diphtheria+Income.composition.of.resources, data = train.high)
